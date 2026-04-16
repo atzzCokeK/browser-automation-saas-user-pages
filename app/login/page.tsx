@@ -40,7 +40,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               placeholder="パスワードを入力"
-              defaultValue="password"
+              defaultValue="xK9#mQ2$vL5@nR8w"
               autoComplete="current-password"
             />
           </div>
