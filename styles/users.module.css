@@ -1,0 +1,84 @@
+.page {
+  padding: 32px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.count {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.tableWrapper {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.table {
+  min-width: 700px;
+}
+
+.table thead {
+  background: var(--color-bg);
+}
+
+.table th {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.statusActive {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.statusInactive {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+}

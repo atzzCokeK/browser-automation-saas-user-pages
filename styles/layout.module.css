@@ -1,0 +1,10 @@
+.wrapper {
+  display: flex;
+  min-height: calc(100vh - 56px);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg);
+}
