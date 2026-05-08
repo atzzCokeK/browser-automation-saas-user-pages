@@ -1,5 +1,9 @@
+import { Suspense } from "react";
 import { users } from "@/data/users";
 import Pagination from "@/components/Pagination";
+import UserTable from "@/components/UserTable";
+import ModeSwitcher from "@/components/ModeSwitcher";
+import InfiniteScrollUsers from "@/components/InfiniteScrollUsers";
 import styles from "@/styles/users.module.css";
 
 const PER_PAGE = 20;
@@ -7,14 +11,17 @@ const PER_PAGE = 20;
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; mode?: string }>;
 }) {
-  const { page } = await searchParams;
+  const { page, mode } = await searchParams;
+  const displayMode = (mode as "pagination" | "cumulative") || "pagination";
   const currentPage = Math.max(1, Number(page) || 1);
   const totalPages = Math.ceil(users.length / PER_PAGE);
   const safePage = Math.min(currentPage, totalPages);
   const start = (safePage - 1) * PER_PAGE;
   const pageUsers = users.slice(start, start + PER_PAGE);
+
+  const initialUsers = users.slice(0, PER_PAGE);
 
   return (
     <section className={styles.page}>
@@ -23,46 +30,26 @@ export default async function UsersPage({
         <span className={styles.count}>全 {users.length} 件</span>
       </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>ユーザー名</th>
-              <th>メールアドレス</th>
-              <th>部署</th>
-              <th>ステータス</th>
-              <th>作成日</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageUsers.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.department}</td>
-                <td>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      user.status === "有効" ? styles.statusActive : styles.statusInactive
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
-                <td>{user.createdAt}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <ModeSwitcher />
+      </Suspense>
 
-      <Pagination currentPage={safePage} totalPages={totalPages} basePath="/users" />
+      {displayMode === "pagination" ? (
+        <>
+          <UserTable users={pageUsers} />
 
-      <footer style={{ marginTop: 16, textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
-        {start + 1}〜{Math.min(start + PER_PAGE, users.length)} 件を表示 / 全 {users.length} 件
-      </footer>
+          <Pagination currentPage={safePage} totalPages={totalPages} basePath="/users" />
+
+          <footer style={{ marginTop: 16, textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
+            {start + 1}〜{Math.min(start + PER_PAGE, users.length)} 件を表示 / 全 {users.length} 件
+          </footer>
+        </>
+      ) : (
+        <InfiniteScrollUsers
+          initialUsers={initialUsers}
+          totalCount={users.length}
+        />
+      )}
     </section>
   );
 }

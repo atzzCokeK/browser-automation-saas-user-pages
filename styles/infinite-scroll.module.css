@@ -1,0 +1,39 @@
+.scrollContainer {
+  position: relative;
+}
+
+.sentinel {
+  height: 1px;
+  visibility: hidden;
+}
+
+.loadingIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.allLoaded {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.positionIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  margin-top: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
