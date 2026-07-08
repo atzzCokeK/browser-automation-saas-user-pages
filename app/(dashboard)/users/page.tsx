@@ -4,6 +4,7 @@ import Pagination from "@/components/Pagination";
 import UserTable from "@/components/UserTable";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import InfiniteScrollUsers from "@/components/InfiniteScrollUsers";
+import CsvDownloadButton from "@/components/CsvDownloadButton";
 import styles from "@/styles/users.module.css";
 
 const PER_PAGE = 20;
@@ -27,7 +28,10 @@ export default async function UsersPage({
     <section className={styles.page}>
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
-        <span className={styles.count}>全 {users.length} 件</span>
+        <div className={styles.titleActions}>
+          <CsvDownloadButton users={users} />
+          <span className={styles.count}>全 {users.length} 件</span>
+        </div>
       </div>
 
       <Suspense fallback={<div>Loading...</div>}>

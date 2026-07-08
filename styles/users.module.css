@@ -14,6 +14,12 @@
   font-weight: 700;
 }
 
+.titleActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .count {
   font-size: 14px;
   color: var(--color-text-secondary);
