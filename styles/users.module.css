@@ -20,6 +20,23 @@
   gap: 12px;
 }
 
+.newButton {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: var(--color-primary);
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+
+.newButton:hover {
+  background: var(--color-primary-dark);
+}
+
 .count {
   font-size: 14px;
   color: var(--color-text-secondary);

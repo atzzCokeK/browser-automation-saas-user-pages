@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { users } from "@/data/users";
 import Pagination from "@/components/Pagination";
 import UserTable from "@/components/UserTable";
@@ -29,6 +30,9 @@ export default async function UsersPage({
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
         <div className={styles.titleActions}>
+          <Link href="/users/new" className={styles.newButton}>
+            新規登録
+          </Link>
           <CsvDownloadButton users={users} />
           <span className={styles.count}>全 {users.length} 件</span>
         </div>
