@@ -1,8 +1,4 @@
-/* フォーム下部で送信しても見えるように、ヘッダー（高さ 56px）の直下へ固定する。 */
 .bar {
-  position: sticky;
-  top: 56px;
-  z-index: 50;
   display: flex;
   align-items: center;
   gap: 8px;

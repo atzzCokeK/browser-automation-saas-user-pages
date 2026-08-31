@@ -1,13 +1,14 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { type User } from "@/data/users";
-import { deleteUser, useUserStore } from "@/hooks/useUserStore";
+import { consumeNotification, deleteUser, useUserStore } from "@/hooks/useUserStore";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
 import InfiniteScrollUsers from "@/components/InfiniteScrollUsers";
 import ModeSwitcher from "@/components/ModeSwitcher";
+import NotificationBar from "@/components/NotificationBar";
 import Pagination from "@/components/Pagination";
 import UserTable from "@/components/UserTable";
 import styles from "@/styles/users.module.css";
@@ -25,6 +26,12 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
   const [emailQuery, setEmailQuery] = useState("");
   const [page, setPage] = useState(initialPage);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    const message = consumeNotification();
+    if (message !== null) setNotification(message);
+  }, []);
 
   const visibleUsers = useMemo(() => {
     const query = emailQuery.trim().toLowerCase();
@@ -58,6 +65,8 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
 
   return (
     <section className={styles.page}>
+      {notification && <NotificationBar message={notification} />}
+
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
         <div className={styles.titleActions}>

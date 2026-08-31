@@ -15,6 +15,9 @@ const EMPTY_STORE: UserStore = { addedUsers: [], deletedIds: new Set() };
 let store: UserStore = EMPTY_STORE;
 let nextId = users.reduce((max, user) => Math.max(max, user.id), 0) + 1;
 
+// 画面遷移をまたいで 1 度だけ表示する通知。購読は不要なので snapshot には含めない。
+let notification: string | null = null;
+
 const listeners = new Set<() => void>();
 
 function subscribe(listener: () => void) {
@@ -42,6 +45,16 @@ export function addUser(user: NewUser) {
     addedUsers: [{ ...user, id: nextId++ }, ...store.addedUsers],
   };
   notify();
+}
+
+export function setNotification(message: string) {
+  notification = message;
+}
+
+export function consumeNotification() {
+  const message = notification;
+  notification = null;
+  return message;
 }
 
 export function deleteUser(id: number) {

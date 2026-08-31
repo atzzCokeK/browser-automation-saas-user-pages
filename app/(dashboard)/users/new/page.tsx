@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import NotificationBar from "@/components/NotificationBar";
-import { addUser } from "@/hooks/useUserStore";
+import { addUser, setNotification } from "@/hooks/useUserStore";
 import styles from "@/styles/user-new.module.css";
 
 const departments = [
@@ -34,7 +33,7 @@ function formatToday() {
 
 export default function UserNewPage() {
   const router = useRouter();
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,10 +51,9 @@ export default function UserNewPage() {
       createdAt: formatToday(),
     });
 
-    setSuccess(true);
-    setTimeout(() => {
-      router.push("/users");
-    }, 1000);
+    setNotification("ユーザーを登録しました");
+    setSubmitted(true);
+    router.push("/users");
   };
 
   const handleCancel = () => {
@@ -64,8 +62,6 @@ export default function UserNewPage() {
 
   return (
     <section className={styles.page}>
-      {success && <NotificationBar message="ユーザーを登録しました" />}
-
       <Link href="/users" className={styles.backLink}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M10.5 3L5.5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -244,7 +240,7 @@ export default function UserNewPage() {
             <button type="button" className={styles.cancelButton} onClick={handleCancel}>
               キャンセル
             </button>
-            <button type="submit" className={styles.submitButton} disabled={success}>
+            <button type="submit" className={styles.submitButton} disabled={submitted}>
               登録する
             </button>
           </div>
