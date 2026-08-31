@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { addUser, setNotification } from "@/hooks/useUserStore";
 import styles from "@/styles/user-new.module.css";
 
 const departments = [
@@ -23,49 +24,36 @@ const permissions = [
   { value: "readonly", label: "閲覧のみ" },
 ];
 
-const webmcpSampleCode = `<form
-  toolname="register_user"
-  tooldescription="Register a new user to the BtoB SaaS
-    admin panel. Provide the user's personal
-    information, department, role, and permissions.">
-
-  <input name="last_name"
-    toolparamdescription="User's last name in Japanese
-      (e.g. 田中)" />
-
-  <input name="first_name"
-    toolparamdescription="User's first name in Japanese
-      (e.g. 太郎)" />
-
-  <input name="email" type="email"
-    toolparamdescription="User's email address for login" />
-
-  <select name="department"
-    toolparamdescription="Department the user belongs to.
-      Options: 営業部, 開発部, 人事部, 経理部,
-      マーケティング部, カスタマーサポート部" />
-
-  <select name="permission"
-    toolparamdescription="Permission level.
-      Options: 一般 (general user),
-      管理者 (admin), 閲覧のみ (read-only)" />
-
-  <input name="status" type="radio"
-    toolparamdescription="Account status:
-      有効 (active) or 無効 (inactive).
-      Default: 有効" />
-</form>`;
+function formatToday() {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${today.getFullYear()}-${month}-${day}`;
+}
 
 export default function UserNewPage() {
   const router = useRouter();
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccess(true);
-    setTimeout(() => {
-      router.push("/users");
-    }, 3000);
+
+    const formData = new FormData(e.currentTarget);
+    const lastName = String(formData.get("last_name") ?? "").trim();
+    const firstName = String(formData.get("first_name") ?? "").trim();
+    const department = String(formData.get("department") ?? "").trim();
+
+    addUser({
+      name: `${lastName} ${firstName}`.trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      department: department === "" ? "-" : department,
+      status: formData.get("status") === "無効" ? "無効" : "有効",
+      createdAt: formatToday(),
+    });
+
+    setNotification("ユーザーを登録しました");
+    setSubmitted(true);
+    router.push("/users");
   };
 
   const handleCancel = () => {
@@ -82,12 +70,6 @@ export default function UserNewPage() {
       </Link>
 
       <h1 className={styles.title}>ユーザー新規登録</h1>
-
-      {success && (
-        <div className={styles.successBanner} role="alert">
-          ユーザーを登録しました（デモ）。3秒後にユーザー一覧へ移動します…
-        </div>
-      )}
 
       <div className={styles.card}>
         <form
@@ -149,18 +131,16 @@ export default function UserNewPage() {
 
           <div className={styles.field}>
             <label htmlFor="department" className={styles.label}>
-              部署<span className={styles.required} aria-hidden="true">*</span>
+              部署
             </label>
             <select
               id="department"
               name="department"
               className={styles.select}
-              required
-              aria-required="true"
               defaultValue=""
-              {...{ toolparamdescription: "Department the user belongs to. Options: 営業部, 開発部, 人事部, 経理部, マーケティング部, カスタマーサポート部" }}
+              {...{ toolparamdescription: "Department the user belongs to. Options: 営業部, 開発部, 人事部, 経理部, マーケティング部, カスタマーサポート部. Optional." }}
             >
-              <option value="" disabled>選択してください</option>
+              <option value="">選択してください（任意）</option>
               {departments.map((dept) => (
                 <option key={dept} value={dept}>{dept}</option>
               ))}
@@ -187,18 +167,16 @@ export default function UserNewPage() {
 
           <div className={styles.field}>
             <label htmlFor="permission" className={styles.label}>
-              権限レベル<span className={styles.required} aria-hidden="true">*</span>
+              権限レベル
             </label>
             <select
               id="permission"
               name="permission"
               className={styles.select}
-              required
-              aria-required="true"
               defaultValue=""
-              {...{ toolparamdescription: "Permission level. Options: 一般 (general user), 管理者 (admin), 閲覧のみ (read-only)" }}
+              {...{ toolparamdescription: "Permission level. Options: 一般 (general user), 管理者 (admin), 閲覧のみ (read-only). Optional." }}
             >
-              <option value="" disabled>選択してください</option>
+              <option value="">選択してください（任意）</option>
               {permissions.map((p) => (
                 <option key={p.value} value={p.value}>{p.label}</option>
               ))}
@@ -207,11 +185,11 @@ export default function UserNewPage() {
 
           <fieldset className={styles.field} style={{ border: "none", padding: 0 }}>
             <legend className={styles.label}>
-              ステータス<span className={styles.required} aria-hidden="true">*</span>
+              ステータス
             </legend>
             <div
               className={styles.radioGroup}
-              {...{ toolparamdescription: "Account status: 有効 (active) or 無効 (inactive). Default: 有効" }}
+              {...{ toolparamdescription: "Account status: 有効 (active) or 無効 (inactive). Default: 有効. Optional." }}
             >
               <label className={styles.radioLabel}>
                 <input
@@ -219,7 +197,6 @@ export default function UserNewPage() {
                   name="status"
                   value="有効"
                   defaultChecked
-                  required
                 />
                 有効
               </label>
@@ -263,24 +240,11 @@ export default function UserNewPage() {
             <button type="button" className={styles.cancelButton} onClick={handleCancel}>
               キャンセル
             </button>
-            <button type="submit" className={styles.submitButton} disabled={success}>
+            <button type="submit" className={styles.submitButton} disabled={submitted}>
               登録する
             </button>
           </div>
         </form>
-      </div>
-
-      <div className={styles.webmcpSection}>
-        <h2 className={styles.webmcpTitle}>WebMCP 属性リファレンス</h2>
-        <p className={styles.webmcpDesc}>
-          このフォームには以下の WebMCP 宣言型属性が付与されています。
-          対応ブラウザ上の AI エージェントがこのフォームをツールとして認識し、自動入力できます。
-        </p>
-        <pre className={styles.codeBlock}>{webmcpSampleCode}</pre>
-        <p className={styles.webmcpNote}>
-          <span className={styles.webmcpBadge}>Origin Trial</span>
-          対応ブラウザ: Google Chrome（オリジントライアル段階）
-        </p>
       </div>
     </section>
   );
