@@ -53,16 +53,30 @@
   box-shadow: var(--shadow);
 }
 
-.searchLabel {
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 20px;
   font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+
+.searchButton:hover {
+  background: var(--color-primary-dark);
 }
 
 .searchInput {
   flex: 1;
   max-width: 360px;
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 14px;
   font-size: 14px;
   color: var(--color-text);
   background: var(--color-white);

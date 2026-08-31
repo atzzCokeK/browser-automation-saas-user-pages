@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import Link from "next/link";
 import { type User } from "@/data/users";
 import { consumeNotification, deleteUser, useUserStore } from "@/hooks/useUserStore";
@@ -23,6 +24,7 @@ type Props = {
 
 export default function UsersView({ allUsers, mode, initialPage }: Props) {
   const { addedUsers, deletedIds } = useUserStore();
+  const [searchInput, setSearchInput] = useState("");
   const [emailQuery, setEmailQuery] = useState("");
   const [page, setPage] = useState(initialPage);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -47,9 +49,19 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
   const start = (safePage - 1) * PER_PAGE;
   const pageUsers = visibleUsers.slice(start, start + PER_PAGE);
 
-  const handleQueryChange = (value: string) => {
-    setEmailQuery(value);
+  const handleSearchSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    setEmailQuery(searchInput.trim());
     setPage(1);
+  };
+
+  // 入力欄を空にしたのに絞り込みが残ると分かりにくいので、その場で解除する。
+  const handleSearchInputChange = (value: string) => {
+    setSearchInput(value);
+    if (value.trim() === "") {
+      setEmailQuery("");
+      setPage(1);
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -78,31 +90,40 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
         </div>
       </div>
 
-      <div className={styles.searchRow}>
-        <label htmlFor="email-search" className={styles.searchLabel}>
-          メールアドレス検索
-        </label>
+      <form className={styles.searchRow} role="search" onSubmit={handleSearchSubmit}>
         <input
           id="email-search"
           name="email-search"
           type="search"
           className={styles.searchInput}
-          value={emailQuery}
-          onChange={(event) => handleQueryChange(event.target.value)}
-          placeholder="例: tanaka@example.co.jp"
+          value={searchInput}
+          onChange={(event) => handleSearchInputChange(event.target.value)}
+          placeholder="メールアドレス検索"
+          aria-label="メールアドレス検索"
           autoComplete="off"
         />
-        {emailQuery.trim() !== "" && (
+        <button type="submit" className={styles.searchButton}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.6" />
+            <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          検索
+        </button>
+        {emailQuery !== "" && (
           <span className={styles.searchResult}>{visibleUsers.length} 件が該当</span>
         )}
-      </div>
+      </form>
 
       <Suspense fallback={<div>Loading...</div>}>
         <ModeSwitcher />
       </Suspense>
 
       {visibleUsers.length === 0 ? (
-        <p className={styles.empty}>該当するユーザーが見つかりませんでした。</p>
+        <p className={styles.empty}>
+          {emailQuery === ""
+            ? "表示できるユーザーがいません。"
+            : `メールアドレスに「${emailQuery}」を含むユーザーは見つかりませんでした。`}
+        </p>
       ) : mode === "pagination" ? (
         <>
           <UserTable users={pageUsers} onDelete={setUserToDelete} />
