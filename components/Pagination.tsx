@@ -1,43 +1,45 @@
-import Link from "next/link";
+"use client";
+
 import styles from "@/styles/pagination.module.css";
 
 type Props = {
   currentPage: number;
   totalPages: number;
-  basePath: string;
+  onPageChange: (page: number) => void;
 };
 
-export default function Pagination({ currentPage, totalPages, basePath }: Props) {
+export default function Pagination({ currentPage, totalPages, onPageChange }: Props) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <nav className={styles.pagination} aria-label="ページネーション">
-      <Link
-        href={`${basePath}?page=${currentPage - 1}`}
+      <button
+        type="button"
         className={`${styles.pageLink} ${currentPage <= 1 ? styles.disabled : ""}`}
-        aria-disabled={currentPage <= 1}
-        tabIndex={currentPage <= 1 ? -1 : undefined}
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
       >
         前へ
-      </Link>
+      </button>
       {pages.map((page) => (
-        <Link
+        <button
           key={page}
-          href={`${basePath}?page=${page}`}
+          type="button"
           className={`${styles.pageLink} ${page === currentPage ? styles.active : ""}`}
+          onClick={() => onPageChange(page)}
           aria-current={page === currentPage ? "page" : undefined}
         >
           {page}
-        </Link>
+        </button>
       ))}
-      <Link
-        href={`${basePath}?page=${currentPage + 1}`}
+      <button
+        type="button"
         className={`${styles.pageLink} ${currentPage >= totalPages ? styles.disabled : ""}`}
-        aria-disabled={currentPage >= totalPages}
-        tabIndex={currentPage >= totalPages ? -1 : undefined}
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
       >
         次へ
-      </Link>
+      </button>
     </nav>
   );
 }

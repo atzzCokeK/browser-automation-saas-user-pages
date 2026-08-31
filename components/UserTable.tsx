@@ -3,9 +3,10 @@ import styles from "@/styles/users.module.css";
 
 type Props = {
   users: User[];
+  onDelete: (user: User) => void;
 };
 
-export default function UserTable({ users }: Props) {
+export default function UserTable({ users, onDelete }: Props) {
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
@@ -17,6 +18,7 @@ export default function UserTable({ users }: Props) {
             <th>部署</th>
             <th>ステータス</th>
             <th>作成日</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +38,16 @@ export default function UserTable({ users }: Props) {
                 </span>
               </td>
               <td>{user.createdAt}</td>
+              <td>
+                <button
+                  type="button"
+                  className={styles.deleteButton}
+                  onClick={() => onDelete(user)}
+                  aria-label={`${user.name} を削除`}
+                >
+                  削除
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -7,31 +7,23 @@ import UserTable from "@/components/UserTable";
 import styles from "@/styles/infinite-scroll.module.css";
 
 type Props = {
-  initialUsers: User[];
-  totalCount: number;
+  users: User[];
+  onDelete: (user: User) => void;
 };
 
 const PER_PAGE = 20;
+// 読み込み中インジケーターが見えるように、あえて待ってから続きを表示する。
+const LOAD_DELAY_MS = 300;
 
-export default function InfiniteScrollUsers({ initialUsers, totalCount }: Props) {
-  const [items, setItems] = useState<User[]>(initialUsers);
-  const [page, setPage] = useState(2); // Next page to fetch
+export default function InfiniteScrollUsers({ users, onDelete }: Props) {
+  const [visibleCount, setVisibleCount] = useState(PER_PAGE);
   const [isLoadingDown, setIsLoadingDown] = useState(false);
-  const [hasMore, setHasMore] = useState(initialUsers.length < totalCount);
 
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
   const isLoadingRef = useRef(false);
 
-  const fetchUsers = async (pageNum: number) => {
-    try {
-      const response = await fetch(`/api/users?page=${pageNum}&limit=${PER_PAGE}`);
-      if (!response.ok) throw new Error("Failed to fetch");
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      return null;
-    }
-  };
+  const items = users.slice(0, visibleCount);
+  const hasMore = visibleCount < users.length;
 
   const handleLoadDown = useCallback(async () => {
     if (isLoadingRef.current || !hasMore) {
@@ -40,16 +32,12 @@ export default function InfiniteScrollUsers({ initialUsers, totalCount }: Props)
 
     isLoadingRef.current = true;
     setIsLoadingDown(true);
-    const data = await fetchUsers(page);
+    await new Promise((resolve) => setTimeout(resolve, LOAD_DELAY_MS));
 
-    if (data) {
-      setItems((prev) => [...prev, ...data.users]);
-      setPage((p) => p + 1);
-      setHasMore(data.hasMore);
-    }
+    setVisibleCount((count) => count + PER_PAGE);
     setIsLoadingDown(false);
     isLoadingRef.current = false;
-  }, [hasMore, page]);
+  }, [hasMore]);
 
   useIntersectionObserver(bottomSentinelRef, handleLoadDown, {
     threshold: 0,
@@ -59,7 +47,7 @@ export default function InfiniteScrollUsers({ initialUsers, totalCount }: Props)
 
   return (
     <div className={styles.scrollContainer}>
-      <UserTable users={items} />
+      <UserTable users={items} onDelete={onDelete} />
 
       {hasMore ? (
         <>
@@ -73,7 +61,7 @@ export default function InfiniteScrollUsers({ initialUsers, totalCount }: Props)
       )}
 
       <div className={styles.positionIndicator}>
-        1〜{items.length} 件を表示 / 全 {totalCount} 件
+        1〜{items.length} 件を表示 / 全 {users.length} 件
       </div>
     </div>
   );
