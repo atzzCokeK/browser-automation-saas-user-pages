@@ -67,9 +67,14 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
   const handleConfirmDelete = () => {
     if (userToDelete) {
       deleteUser(userToDelete.id);
+      setNotification(`${userToDelete.name} を削除しました`);
     }
     setUserToDelete(null);
   };
+
+  const handleCloseNotification = useCallback(() => {
+    setNotification(null);
+  }, []);
 
   const handleCancelDelete = useCallback(() => {
     setUserToDelete(null);
@@ -77,7 +82,9 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
 
   return (
     <section className={styles.page}>
-      {notification && <NotificationBar message={notification} />}
+      {notification && (
+        <NotificationBar message={notification} onClose={handleCloseNotification} />
+      )}
 
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
