@@ -22,6 +22,13 @@ const navItems = [
   },
 ];
 
+function isNavActive(pathname: string, href: string) {
+  if (href === "/users") {
+    return pathname === "/users" || pathname.startsWith("/users/");
+  }
+  return pathname === href;
+}
+
 export default function Sidebar() {
   const { pathname } = useLocation();
 
@@ -32,7 +39,8 @@ export default function Sidebar() {
           <li key={item.href}>
             <Link
               to={item.href}
-              className={`${styles.navLink} ${pathname === item.href ? styles.active : ""}`}
+              className={`${styles.navLink} ${isNavActive(pathname, item.href) ? styles.active : ""}`}
+              aria-current={isNavActive(pathname, item.href) ? "page" : undefined}
             >
               {item.icon}
               <span>{item.label}</span>

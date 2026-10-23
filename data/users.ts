@@ -1,3 +1,22 @@
+export const departments = [
+  "営業部",
+  "開発部",
+  "人事部",
+  "経理部",
+  "マーケティング部",
+  "カスタマーサポート部",
+] as const;
+
+export const positions = ["一般社員", "主任", "係長", "課長", "部長"] as const;
+
+export const permissionOptions = [
+  { value: "general", label: "一般" },
+  { value: "admin", label: "管理者" },
+  { value: "readonly", label: "閲覧のみ" },
+] as const;
+
+export type UserPermission = (typeof permissionOptions)[number]["value"];
+
 export type User = {
   id: number;
   name: string;
@@ -5,7 +24,15 @@ export type User = {
   department: string;
   status: "有効" | "無効";
   createdAt: string;
+  position: string;
+  permission: UserPermission | "";
+  joinDate: string;
+  notes: string;
 };
+
+export function isUserPermission(value: string): value is UserPermission {
+  return permissionOptions.some((option) => option.value === value);
+}
 
 const lastNames: { kanji: string; romaji: string }[] = [
   { kanji: "田中", romaji: "tanaka" },
@@ -73,14 +100,7 @@ const firstNames: { kanji: string; romaji: string }[] = [
   { kanji: "凛", romaji: "rin" },
 ];
 
-const departments = [
-  "営業部",
-  "開発部",
-  "人事部",
-  "経理部",
-  "マーケティング部",
-  "カスタマーサポート部",
-];
+const noteSamples = ["", "", "", "リモート中心", "時短勤務", "管理職候補"];
 
 function seededRandom(seed: number) {
   let s = seed;
@@ -88,6 +108,16 @@ function seededRandom(seed: number) {
     s = (s * 1103515245 + 12345) & 0x7fffffff;
     return s / 0x7fffffff;
   };
+}
+
+function shiftIsoDate(isoDate: string, days: number): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function generateUsers(): User[] {
@@ -105,6 +135,14 @@ function generateUsers(): User[] {
     const day = 1 + Math.floor(random() * 28);
     const createdAt = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
+    // 役職・権限・入社日・備考は別シードで決める。seed=42 の氏名、メール、部署、状態、登録日は変えない。
+    const profileRandom = seededRandom(42000 + i);
+    const position = positions[Math.floor(profileRandom() * positions.length)];
+    const permission =
+      permissionOptions[Math.floor(profileRandom() * permissionOptions.length)].value;
+    const notes = noteSamples[Math.floor(profileRandom() * noteSamples.length)];
+    const joinDate = shiftIsoDate(createdAt, -Math.floor(profileRandom() * 120));
+
     users.push({
       id: i,
       name: `${lastName.kanji} ${firstName.kanji}`,
@@ -112,6 +150,10 @@ function generateUsers(): User[] {
       department,
       status,
       createdAt,
+      position,
+      permission,
+      joinDate,
+      notes,
     });
   }
 

@@ -18,7 +18,7 @@ title: "[Bug] "
 
 - URL / ルート:
 - ブラウザ:
-- デモ (https://dummy-saas-user-pages.vercel.app) またはローカル:
+- デモ (https://sample-saas-admin.atzz.workers.dev) またはローカル:
 
 ## 補足
 

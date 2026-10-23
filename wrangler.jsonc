@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "browser-automation-saas-user-pages",
+  "name": "sample-saas-admin",
   "compatibility_date": "2026-10-23",
   "main": "./src/worker/index.ts",
   "assets": {
