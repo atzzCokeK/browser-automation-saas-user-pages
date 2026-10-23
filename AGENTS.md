@@ -13,10 +13,11 @@ There is no Next.js and no server rendering. Do not add `next`, an `app/` direct
 
 ## Behavior to keep
 
-- Adds and deletes stay in the browser module store (`hooks/useUserStore.ts`). A reload restores the 100 seeded users (`data/users.ts`, seed 42). Do not persist that state on the Worker or in a database.
-- `GET /api/users` pages the seed only. Query params are `page` and `limit`. It does not see in-memory adds, deletes, or the email filter.
+- Adds, updates, and deletes stay in the browser module store (`hooks/useUserStore.ts`). A reload restores the 100 seeded users (`data/users.ts`, seed 42). Do not persist that state on the Worker or in a database.
+- `GET /api/users` pages the seed only. Query params are `page` and `limit`. It does not see in-memory adds, updates, deletes, or the email filter.
 - `GET /api/health` returns `{ "ok": true }`.
-- `/users/new` keeps the WebMCP attributes `toolname`, `tooldescription`, and `toolparamdescription` on the same elements.
+- `/users/new` keeps the WebMCP attributes `toolname="register_user"`, `tooldescription`, and `toolparamdescription` on the same elements.
+- `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`.
 - UI copy is Japanese. The document title is `SaaS Admin - 管理画面` and `html` is `lang="ja"`.
 
 ## Security

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router";
 import DashboardLayout from "@/src/layouts/DashboardLayout";
 import DashboardPage from "@/src/pages/DashboardPage";
 import LoginPage from "@/src/pages/LoginPage";
+import UserDetailPage from "@/src/pages/UserDetailPage";
 import UserNewPage from "@/src/pages/UserNewPage";
 import UsersPage from "@/src/pages/UsersPage";
 
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/new" element={<UserNewPage />} />
+        <Route path="/users/:id" element={<UserDetailPage />} />
       </Route>
     </Routes>
   );

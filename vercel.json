@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://browser-automation-saas-user-pages.atsushi1230-sdi.workers.dev/:path*",
+      "permanent": true
+    }
+  ]
+}

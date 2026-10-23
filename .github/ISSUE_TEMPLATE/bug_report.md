@@ -18,7 +18,7 @@ title: "[Bug] "
 
 - URL / ルート:
 - ブラウザ:
-- デモ (https://dummy-saas-user-pages.vercel.app) またはローカル:
+- デモ (https://browser-automation-saas-user-pages.atsushi1230-sdi.workers.dev) またはローカル:
 
 ## 補足
 
