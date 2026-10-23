@@ -1,13 +1,11 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router";
 import styles from "@/styles/header.module.css";
 
 export default function Header() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    router.push("/login");
+    navigate("/login");
   };
 
   return (

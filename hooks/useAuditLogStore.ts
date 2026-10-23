@@ -1,11 +1,10 @@
-"use client";
-
 import { useSyncExternalStore } from "react";
 import {
   auditLogs,
   type AuditAction,
   type AuditLog,
 } from "@/data/auditLogs";
+import { permissionOptions, type User } from "@/data/users";
 
 // ブラウザ内の操作で増えた履歴。再読み込みでモジュールが初期化され、シードに戻る。
 let logs: readonly AuditLog[] = auditLogs;
@@ -114,6 +113,50 @@ export function recordCsvExport(count: number) {
     action: "user.export_csv",
     target,
     summary: `${target}をCSVエクスポートしました`,
+  });
+}
+
+type EditableUser = Pick<
+  User,
+  "name" | "email" | "department" | "position" | "permission" | "status" | "joinDate" | "notes"
+>;
+
+function permissionLabel(value: string): string {
+  return permissionOptions.find((option) => option.value === value)?.label ?? "未設定";
+}
+
+// 保存 1 回につき 1 件。権限変更と無効化は、その操作が分かる action にする。
+export function recordUserEdit(before: EditableUser, after: EditableUser) {
+  const target = personTarget(after.name, after.email);
+
+  if (before.permission !== after.permission) {
+    return recordAuditLog({
+      action: "user.permission_change",
+      target,
+      summary: `${after.name} の権限を「${permissionLabel(before.permission)}」から「${permissionLabel(after.permission)}」に変更しました`,
+    });
+  }
+
+  if (before.status !== "無効" && after.status === "無効") {
+    return recordAuditLog({
+      action: "user.disable",
+      target,
+      summary: `${after.name} のアカウントを無効化しました`,
+    });
+  }
+
+  if (before.status !== after.status) {
+    return recordAuditLog({
+      action: "user.update",
+      target,
+      summary: `${after.name} のステータスを${before.status}から${after.status}に変更しました`,
+    });
+  }
+
+  return recordAuditLog({
+    action: "user.update",
+    target,
+    summary: `${target}の情報を更新しました`,
   });
 }
 

@@ -1,29 +1,10 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { departments, isUserPermission, permissionOptions, positions } from "@/data/users";
 import { recordUserCreate } from "@/hooks/useAuditLogStore";
 import { addUser, setNotification } from "@/hooks/useUserStore";
 import styles from "@/styles/user-new.module.css";
-
-const departments = [
-  "営業部",
-  "開発部",
-  "人事部",
-  "経理部",
-  "マーケティング部",
-  "カスタマーサポート部",
-];
-
-const positions = ["一般社員", "主任", "係長", "課長", "部長"];
-
-const permissions = [
-  { value: "general", label: "一般" },
-  { value: "admin", label: "管理者" },
-  { value: "readonly", label: "閲覧のみ" },
-];
 
 function formatToday() {
   const today = new Date();
@@ -33,7 +14,7 @@ function formatToday() {
 }
 
 export default function UserNewPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -45,6 +26,7 @@ export default function UserNewPage() {
     const department = String(formData.get("department") ?? "").trim();
     const name = `${lastName} ${firstName}`.trim();
     const email = String(formData.get("email") ?? "").trim();
+    const permission = String(formData.get("permission") ?? "").trim();
 
     addUser({
       name,
@@ -52,21 +34,25 @@ export default function UserNewPage() {
       department: department === "" ? "-" : department,
       status: formData.get("status") === "無効" ? "無効" : "有効",
       createdAt: formatToday(),
+      position: String(formData.get("position") ?? "").trim(),
+      permission: isUserPermission(permission) ? permission : "",
+      joinDate: String(formData.get("join_date") ?? "").trim(),
+      notes: String(formData.get("notes") ?? "").trim(),
     });
     recordUserCreate(name, email);
 
     setNotification("ユーザーを登録しました");
     setSubmitted(true);
-    router.push("/users");
+    navigate("/users");
   };
 
   const handleCancel = () => {
-    router.push("/users");
+    navigate("/users");
   };
 
   return (
     <section className={styles.page}>
-      <Link href="/users" className={styles.backLink}>
+      <Link to="/users" className={styles.backLink}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M10.5 3L5.5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
@@ -181,7 +167,7 @@ export default function UserNewPage() {
               {...{ toolparamdescription: "Permission level. Options: 一般 (general user), 管理者 (admin), 閲覧のみ (read-only). Optional." }}
             >
               <option value="">選択してください（任意）</option>
-              {permissions.map((p) => (
+              {permissionOptions.map((p) => (
                 <option key={p.value} value={p.value}>{p.label}</option>
               ))}
             </select>

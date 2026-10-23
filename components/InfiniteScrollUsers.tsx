@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useCallback } from "react";
 import { type User } from "@/data/users";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";

@@ -1,7 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router";
 import styles from "@/styles/sidebar.module.css";
 
 const navItems = [
@@ -34,8 +31,15 @@ const navItems = [
   },
 ];
 
+function isNavActive(pathname: string, href: string) {
+  if (href === "/users") {
+    return pathname === "/users" || pathname.startsWith("/users/");
+  }
+  return pathname === href;
+}
+
 export default function Sidebar() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   return (
     <nav className={styles.sidebar} aria-label="メインナビゲーション">
@@ -43,8 +47,9 @@ export default function Sidebar() {
         {navItems.map((item) => (
           <li key={item.href}>
             <Link
-              href={item.href}
-              className={`${styles.navLink} ${pathname === item.href ? styles.active : ""}`}
+              to={item.href}
+              className={`${styles.navLink} ${isNavActive(pathname, item.href) ? styles.active : ""}`}
+              aria-current={isNavActive(pathname, item.href) ? "page" : undefined}
             >
               {item.icon}
               <span>{item.label}</span>

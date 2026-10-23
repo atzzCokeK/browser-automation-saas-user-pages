@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://sample-saas-admin.atzz.workers.dev/:path*",
+      "permanent": true
+    }
+  ]
+}

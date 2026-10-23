@@ -13,9 +13,14 @@
 # testing
 /coverage
 
-# next.js
+# next.js (legacy)
 /.next/
 /out/
+
+# vite / cloudflare
+/dist/
+/.wrangler/
+worker-configuration.d.ts
 
 # production
 /build

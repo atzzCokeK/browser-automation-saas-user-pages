@@ -1,11 +1,9 @@
-"use client";
-
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import Link from "next/link";
+import { Link } from "react-router";
 import { type User } from "@/data/users";
 import { recordUserDelete } from "@/hooks/useAuditLogStore";
-import { consumeNotification, deleteUser, useUserStore } from "@/hooks/useUserStore";
+import { consumeNotification, deleteUser, mergeStoredUsers, useUserStore } from "@/hooks/useUserStore";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
 import InfiniteScrollUsers from "@/components/InfiniteScrollUsers";
@@ -24,7 +22,7 @@ type Props = {
 };
 
 export default function UsersView({ allUsers, mode, initialPage }: Props) {
-  const { addedUsers, deletedIds } = useUserStore();
+  const store = useUserStore();
   const [searchInput, setSearchInput] = useState("");
   const [emailQuery, setEmailQuery] = useState("");
   const [page, setPage] = useState(initialPage);
@@ -38,12 +36,10 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
 
   const visibleUsers = useMemo(() => {
     const query = emailQuery.trim().toLowerCase();
-    return [...addedUsers, ...allUsers].filter(
-      (user) =>
-        !deletedIds.has(user.id) &&
-        (query === "" || user.email.toLowerCase().includes(query))
+    return mergeStoredUsers(store, allUsers).filter(
+      (user) => query === "" || user.email.toLowerCase().includes(query),
     );
-  }, [addedUsers, allUsers, deletedIds, emailQuery]);
+  }, [store, allUsers, emailQuery]);
 
   const totalPages = Math.max(1, Math.ceil(visibleUsers.length / PER_PAGE));
   const safePage = Math.min(page, totalPages);
@@ -91,7 +87,7 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
         <div className={styles.titleActions}>
-          <Link href="/users/new" className={styles.newButton}>
+          <Link to="/users/new" className={styles.newButton}>
             新規登録
           </Link>
           <CsvDownloadButton users={visibleUsers} />

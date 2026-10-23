@@ -1,18 +1,16 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router";
 import type { FormEvent } from "react";
 import { recordLogin } from "@/hooks/useAuditLogStore";
 import styles from "@/styles/login.module.css";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = String(new FormData(e.currentTarget).get("email") ?? "");
     recordLogin(email);
-    router.push("/dashboard");
+    navigate("/dashboard");
   };
 
   return (

@@ -1,5 +1,3 @@
-"use client";
-
 import { type User } from "@/data/users";
 import { recordCsvExport } from "@/hooks/useAuditLogStore";
 import styles from "@/styles/csv-download.module.css";

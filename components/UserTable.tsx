@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { type User } from "@/data/users";
 import styles from "@/styles/users.module.css";
 
@@ -25,7 +26,11 @@ export default function UserTable({ users, onDelete }: Props) {
           {users.map((user, index) => (
             <tr key={`${user.id}-${index}`}>
               <td>{user.id}</td>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`} className={styles.nameLink}>
+                  {user.name}
+                </Link>
+              </td>
               <td>{user.email}</td>
               <td>{user.department}</td>
               <td>
@@ -39,14 +44,19 @@ export default function UserTable({ users, onDelete }: Props) {
               </td>
               <td>{user.createdAt}</td>
               <td>
-                <button
-                  type="button"
-                  className={styles.deleteButton}
-                  onClick={() => onDelete(user)}
-                  aria-label={`${user.name} を削除`}
-                >
-                  削除
-                </button>
+                <div className={styles.rowActions}>
+                  <Link to={`/users/${user.id}`} className={styles.detailLink}>
+                    詳細
+                  </Link>
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => onDelete(user)}
+                    aria-label={`${user.name} を削除`}
+                  >
+                    削除
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
