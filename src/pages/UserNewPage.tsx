@@ -1,7 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { addUser, setNotification } from "@/hooks/useUserStore";
@@ -32,7 +29,7 @@ function formatToday() {
 }
 
 export default function UserNewPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -53,16 +50,16 @@ export default function UserNewPage() {
 
     setNotification("ユーザーを登録しました");
     setSubmitted(true);
-    router.push("/users");
+    navigate("/users");
   };
 
   const handleCancel = () => {
-    router.push("/users");
+    navigate("/users");
   };
 
   return (
     <section className={styles.page}>
-      <Link href="/users" className={styles.backLink}>
+      <Link to="/users" className={styles.backLink}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M10.5 3L5.5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>

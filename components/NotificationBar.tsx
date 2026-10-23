@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import styles from "@/styles/notification-bar.module.css";
 

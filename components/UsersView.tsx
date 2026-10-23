@@ -1,8 +1,6 @@
-"use client";
-
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import Link from "next/link";
+import { Link } from "react-router";
 import { type User } from "@/data/users";
 import { consumeNotification, deleteUser, useUserStore } from "@/hooks/useUserStore";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -89,7 +87,7 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
       <div className={styles.titleRow}>
         <h1 className={styles.title}>ユーザー一覧</h1>
         <div className={styles.titleActions}>
-          <Link href="/users/new" className={styles.newButton}>
+          <Link to="/users/new" className={styles.newButton}>
             新規登録
           </Link>
           <CsvDownloadButton users={visibleUsers} />
