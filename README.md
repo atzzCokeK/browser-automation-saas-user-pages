@@ -1,12 +1,12 @@
 # ブラウザ自動操作向けダミー SaaS 管理画面
 
-**English:** Dummy BtoB SaaS admin consoles for browser automation, AI agents, and end-to-end tests. The UI is a Vite + React 19 single-page app (React Router, no SSR). `/api/*` is a Hono app on Cloudflare Workers, on the same origin. Additions, edits, and deletions stay in browser memory and reset on reload, so the same scenario can be run again from the seeded list. Demo: https://browser-automation-saas-user-pages.atsushi1230-sdi.workers.dev
+**English:** Dummy BtoB SaaS admin consoles for browser automation, AI agents, and end-to-end tests. The UI is a Vite + React 19 single-page app (React Router, no SSR). `/api/*` is a Hono app on Cloudflare Workers, on the same origin. Additions, edits, and deletions stay in browser memory and reset on reload, so the same scenario can be run again from the seeded list. Demo: https://sample-saas-admin.atzz.workers.dev
 
 ## このリポジトリについて
 
 ブラウザ自動操作、AI エージェント、E2E テストの対象にするための、ダミー BtoB SaaS 管理画面（Admin Console）の集まりです。本番の顧客データも、本物の認証もありません。
 
-デモ: https://browser-automation-saas-user-pages.atsushi1230-sdi.workers.dev
+デモ: https://sample-saas-admin.atzz.workers.dev
 
 https://dummy-saas-user-pages.vercel.app は、この Workers URL へ恒久的に転送します。
 
