@@ -32,4 +32,11 @@ app.get("/api/users", async (c) => {
   });
 });
 
+// The previous Next.js route exported GET only, so other methods were 405.
+// OPTIONS is answered by the local Workers runtime before it reaches this app.
+app.on(["POST", "PUT", "PATCH", "DELETE"], "/api/users", (c) => {
+  c.header("Allow", "GET, HEAD");
+  return c.body(null, 405);
+});
+
 export default app;
