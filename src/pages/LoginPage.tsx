@@ -1,15 +1,13 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router";
 import type { FormEvent } from "react";
 import styles from "@/styles/login.module.css";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    router.push("/dashboard");
+    navigate("/dashboard");
   };
 
   return (

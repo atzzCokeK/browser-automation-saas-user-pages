@@ -1,6 +1,6 @@
 # ブラウザ自動操作向けダミー SaaS 管理画面
 
-**English:** Dummy BtoB SaaS admin consoles for browser automation, AI agents, and end-to-end tests. Additions and deletions stay in browser memory and reset on reload, so the same scenario can be run again from the seeded list. Demo: https://dummy-saas-user-pages.vercel.app
+**English:** Dummy BtoB SaaS admin consoles for browser automation, AI agents, and end-to-end tests. The UI is a Vite + React 19 single-page app (React Router, no SSR). `/api/*` is a Hono app on Cloudflare Workers, on the same origin. Additions and deletions stay in browser memory and reset on reload, so the same scenario can be run again from the seeded list. Demo: https://dummy-saas-user-pages.vercel.app
 
 ## このリポジトリについて
 
@@ -60,13 +60,26 @@ npm install
 npm run dev
 ```
 
-http://localhost:3000 を開きます。
+http://localhost:3000 を開きます。`npm run dev` は画面と `/api/*` を同じオリジンで配信します。
 
 本番ビルドの確認:
 
 ```bash
 npm run build
+npm run preview
 ```
+
+`npm run preview` も http://localhost:3000 です。
+
+Cloudflare Workers へ出すとき:
+
+```bash
+npm run deploy
+```
+
+`npm run deploy` は `vite build` のあと `wrangler deploy` を実行します。静的アセットは SPA として配信され、存在しない画面パスは `index.html` に戻ります。`/api/*` だけ Worker が先に受けます。
+
+画面の追加・削除はブラウザのメモリだけです。Worker の `GET /api/users` はシードデータ（100件、`seed=42`）をページングするだけで、登録や削除は反映しません。`GET /api/health` は `{ "ok": true }` を返します。
 
 ## ロードマップ
 

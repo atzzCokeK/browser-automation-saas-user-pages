@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router";
 import { users } from "@/data/users";
 import styles from "@/styles/dashboard.module.css";
 
@@ -27,7 +27,7 @@ export default function DashboardPage() {
           <p className={styles.kpiLabel}>総ユーザー数</p>
           <p className={styles.kpiValue}>{totalUsers}</p>
           <p className={styles.kpiSub}>
-            <Link href="/users">一覧を見る →</Link>
+            <Link to="/users">一覧を見る →</Link>
           </p>
         </article>
         <article className={styles.kpiCard}>

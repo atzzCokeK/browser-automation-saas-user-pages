@@ -1,5 +1,3 @@
-"use client";
-
 import { type User } from "@/data/users";
 import styles from "@/styles/csv-download.module.css";
 

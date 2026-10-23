@@ -1,7 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router";
 import styles from "@/styles/sidebar.module.css";
 
 const navItems = [
@@ -26,7 +23,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   return (
     <nav className={styles.sidebar} aria-label="メインナビゲーション">
@@ -34,7 +31,7 @@ export default function Sidebar() {
         {navItems.map((item) => (
           <li key={item.href}>
             <Link
-              href={item.href}
+              to={item.href}
               className={`${styles.navLink} ${pathname === item.href ? styles.active : ""}`}
             >
               {item.icon}

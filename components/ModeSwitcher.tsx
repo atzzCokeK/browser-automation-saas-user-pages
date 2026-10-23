@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearchParams } from "react-router";
 import styles from "@/styles/mode-switcher.module.css";
 
 type Mode = "pagination" | "cumulative";
@@ -11,8 +9,8 @@ const modes: { value: Mode; label: string }[] = [
 ];
 
 export default function ModeSwitcher() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const currentMode = (searchParams.get("mode") as Mode) || "pagination";
 
   const handleModeChange = (mode: Mode) => {
@@ -27,7 +25,7 @@ export default function ModeSwitcher() {
       params.set("page", "1");
     }
 
-    router.push(`/users?${params.toString()}`);
+    navigate(`/users?${params.toString()}`);
   };
 
   return (
