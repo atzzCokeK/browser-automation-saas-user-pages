@@ -1,8 +1,12 @@
 import { Hono } from "hono";
 import { auditLogs, queryAuditLogs } from "@/data/auditLogs";
 import { users } from "@/data/users";
+import { dispatchScim } from "@/src/worker/scim";
 
 const app = new Hono();
+
+app.all("/api/scim/v2", dispatchScim);
+app.all("/api/scim/v2/*", dispatchScim);
 
 app.get("/api/health", (c) => {
   return c.json({ ok: true });

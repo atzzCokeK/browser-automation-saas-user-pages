@@ -85,7 +85,7 @@ https://dummy-saas-user-pages.vercel.app は、この Workers URL へ恒久的�
 
 - 操作種別で絞り込めます。選択肢はログイン（`user.login`）、ユーザー作成（`user.create`）、ユーザー削除（`user.delete`）、権限変更（`user.permission_change`）、CSVエクスポート（`user.export_csv`）、ユーザー更新（`user.update`）、アカウント無効化（`user.disable`）です。「すべて」で種別の絞り込みは外れます。
 - キーワードは、操作者、操作、対象、概要、IPアドレス、日時に部分一致します。検索ボタンで絞り込み、入力を空にするとキーワードは外れます。「クリア」で種別とキーワードの両方を外します。
-- ログイン（`/login`）、ユーザー登録（`/users/new`）、ユーザー削除（`/users` の確認後、または `/users/:id` の確認後）、ユーザー更新（`/users/:id` の保存）、CSVダウンロード（ユーザー一覧の「CSVダウンロード」）を行うと、その操作が先頭に追加されます。ログインしたメールアドレスが、その後の操作の操作者になります。未入力のときは `admin@example.com` です。
+- ログイン（`/login`）、ユーザー登録（`/users/new`）、ユーザー削除（`/users` の確認後、または `/users/:id` の確認後）、ユーザー更新（`/users/:id` の保存）、CSVダウンロード（ユーザー一覧の「CSVダウンロード」）、SCIM のプロビジョニングと無効化（`/settings/scim`）を行うと、その操作が先頭に追加されます。ログインしたメールアドレスが、その後の操作の操作者になります。未入力のときは `admin@example.com` です。
 - 追加分はブラウザのメモリだけに残り、再読み込みすると 18 件のシードに戻ります。
 
 ### `GET /api/audit-logs`
@@ -101,9 +101,42 @@ https://dummy-saas-user-pages.vercel.app は、この Workers URL へ恒久的�
 
 各要素のフィールドは `id`、`timestamp`（JST の ISO 8601、例: `2026-10-23T09:12:04+09:00`）、`actor`、`action`、`target`、`summary`（日本語）、`ipAddress` です。IP アドレスは文書用の例であり、実在の端末のものではありません。
 
+### `/settings/scim` SCIMプロビジョニング
+
+サイドバーの「SCIMプロビジョニング」から開きます。IdP からのユーザー同期を試すためのダミー SCIM 2.0 です。
+
+- SCIM Base URL は `{現在のオリジン}/api/scim/v2` です。「ベース URL をコピー」でコピーできます。
+- Bearer トークンは画面を開いたときに発行します。形式は `scim_test_token_` のあとに 16〜64 文字の英数字、`_`、`-` です。「トークンを再生成」と「トークンをコピー」があります。再読み込みすると別のトークンになり、この画面のユーザーとログは空に戻ります。
+- 「SCIMリクエストシミュレーター」には次のボタンがあります。
+  - 「ユーザーをプロビジョニング」は `POST /Users` です。成功すると `201 Created` になり、ブラウザのユーザー一覧にも追加されます。監査ログには `user.create` が 1 件残ります。
+  - 「ユーザーを無効化」は、直前に作ったユーザーへの `PATCH /Users/:id` です。`active` を `false` にし、一覧と詳細のステータスを「無効」にします。監査ログには `user.disable` が 1 件残ります。対象がまだ無いときは API を呼ばず、監査ログにも残りません。
+  - 「ユーザーを検索」は `GET /Users` です。`filter=userName eq "..."`、`startIndex=1`、`count=20` を付けます。検索だけでは監査ログは増えません。
+- 同じ反映で、ステータス以外の項目だけを変えたときは `user.update`、ブラウザのユーザーを削除したときは `user.delete` になります。シミュレーターのボタンは作成、無効化、検索です。
+- 直近のリクエストとレスポンス、および `GET /api/scim/v2/logs` のログ（メソッド、パス、ステータス、時刻、概要）を表示します。このログは監査ログとは別です。
+
+`/api/scim/v2` のレスポンスは `Content-Type: application/scim+json` です。
+
+| メソッド | パス | 内容 |
+| --- | --- | --- |
+| GET | `/api/scim/v2/ServiceProviderConfig` | 対応している機能 |
+| GET | `/api/scim/v2/Schemas` | User と Enterprise User のスキーマ |
+| GET | `/api/scim/v2/Users` | `startIndex`、`count`、`filter=userName eq "..."` |
+| GET | `/api/scim/v2/Users/:id` | 1 件取得 |
+| POST | `/api/scim/v2/Users` | 作成。`201 Created` |
+| PUT | `/api/scim/v2/Users/:id` | 置き換え |
+| PATCH | `/api/scim/v2/Users/:id` | `active`、`name`、`userName`、`department` などの更新 |
+| DELETE | `/api/scim/v2/Users/:id` | 削除。`204 No Content` |
+| GET | `/api/scim/v2/logs` | そのトークンの直近 50 件 |
+
+Users と logs には Bearer トークンが必要です。トークンごとにユーザー最大 50 件、ログ最大 50 件で、古いものから捨てます。別のトークンのユーザーは見えません。データベースには書きません。`GET /api/users` のシード一覧とは別です。
+
+シミュレーターで作ったユーザーは、再読み込みするまで `/users` と `/users/:id` に残ります。監査ログに足した履歴も再読み込みでシード 18 件に戻ります。
+
 ## データの持ち方
 
 ユーザーの追加、更新、削除、監査ログの追加はブラウザのメモリにだけ残ります。再読み込みするとシードデータに戻るので、同じ自動操作を最初から繰り返せます。シードユーザーの役職、権限、入社日、備考は ID ごとの固定値です。氏名、メールアドレス、部署、ステータス、登録日は seed=42 のままです。`GET /api/audit-logs` は常に監査ログのシードだけを返します。
+
+SCIM のユーザーとリクエストログは、Worker のメモリ上で Bearer トークンごとに最大 50 件まで持ちます。データベースには保存しません。画面を再読み込みするとトークンが新しくなり、SCIM 画面は空に戻ります。
 
 ## 始め方
 
