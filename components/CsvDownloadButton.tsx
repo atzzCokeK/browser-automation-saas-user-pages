@@ -1,6 +1,7 @@
 "use client";
 
 import { type User } from "@/data/users";
+import { recordCsvExport } from "@/hooks/useAuditLogStore";
 import styles from "@/styles/csv-download.module.css";
 
 type Props = {
@@ -47,6 +48,7 @@ export default function CsvDownloadButton({ users }: Props) {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+    recordCsvExport(users.length);
   };
 
   return (
