@@ -23,6 +23,19 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: "/audit-logs",
+    label: "監査ログ",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fillRule="evenodd"
+          d="M4 2.5A1.5 1.5 0 015.5 1h9A1.5 1.5 0 0116 2.5v15a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 014 17.5v-15zM7 6.25a.75.75 0 01.75-.75h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 017 6.25zm0 3.5a.75.75 0 01.75-.75h4.5a.75.75 0 010 1.5h-4.5a.75.75 0 01-.75-.75zm0 3.5a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75z"
+          clipRule="evenodd"
+        />
+      </svg>
+    ),
+  },
 ];
 
 export default function Sidebar() {
@@ -36,6 +49,7 @@ export default function Sidebar() {
             <Link
               href={item.href}
               className={`${styles.navLink} ${pathname === item.href ? styles.active : ""}`}
+              aria-current={pathname === item.href ? "page" : undefined}
             >
               {item.icon}
               <span>{item.label}</span>

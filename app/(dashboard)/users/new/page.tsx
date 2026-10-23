@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { getSessionActor, recordAuditLog } from "@/hooks/useAuditLogStore";
 import { addUser, setNotification } from "@/hooks/useUserStore";
 import styles from "@/styles/user-new.module.css";
 
@@ -42,13 +43,24 @@ export default function UserNewPage() {
     const lastName = String(formData.get("last_name") ?? "").trim();
     const firstName = String(formData.get("first_name") ?? "").trim();
     const department = String(formData.get("department") ?? "").trim();
+    const name = `${lastName} ${firstName}`.trim();
+    const email = String(formData.get("email") ?? "").trim();
 
     addUser({
-      name: `${lastName} ${firstName}`.trim(),
-      email: String(formData.get("email") ?? "").trim(),
+      name,
+      email,
       department: department === "" ? "-" : department,
       status: formData.get("status") === "無効" ? "無効" : "有効",
       createdAt: formatToday(),
+    });
+    recordAuditLog({
+      actor: getSessionActor(),
+      action: "ユーザー登録",
+      target: email,
+      detail:
+        department === ""
+          ? `${name}（${email}）を登録しました`
+          : `${name}（${email}）を${department}に登録しました`,
     });
 
     setNotification("ユーザーを登録しました");

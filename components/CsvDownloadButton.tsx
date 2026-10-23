@@ -1,6 +1,7 @@
 "use client";
 
 import { type User } from "@/data/users";
+import { getSessionActor, recordAuditLog } from "@/hooks/useAuditLogStore";
 import styles from "@/styles/csv-download.module.css";
 
 type Props = {
@@ -41,6 +42,13 @@ export default function CsvDownloadButton({ users }: Props) {
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     const filename = `users_${yyyy}${mm}${dd}.csv`;
+
+    recordAuditLog({
+      actor: getSessionActor(),
+      action: "CSVエクスポート",
+      target: "ユーザー一覧",
+      detail: `ユーザー一覧をCSVでダウンロードしました（${users.length}件）`,
+    });
 
     const a = document.createElement("a");
     a.href = url;
