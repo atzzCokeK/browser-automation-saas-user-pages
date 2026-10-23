@@ -30,6 +30,15 @@ const navItems = [
     ),
   },
   {
+    href: "/settings/sso",
+    label: "SSO設定 (SAML)",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M10 2a4 4 0 00-4 4v2H5a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1h-1V6a4 4 0 00-4-4zm-2 6V6a2 2 0 114 0v2H8z" />
+      </svg>
+    ),
+  },
+  {
     href: "/settings/scim",
     label: "SCIMプロビジョニング",
     icon: (

@@ -79,13 +79,25 @@ https://dummy-saas-user-pages.vercel.app は、この Workers URL へ恒久的�
 
 存在しない ID、または削除済みの ID では「ユーザーが見つかりません」と表示し、「一覧へ戻る」で `/users` に戻ります。ID 1–100 のシードユーザーも、新規登録した ID 101 以降も更新できます。再読み込みすると seed=42 の初期値に戻ります。
 
+### `/settings/sso` SSO設定 (SAML)
+
+サイドバーの「SSO設定 (SAML)」から開きます。試験用の SAML 2.0 Service Provider です。
+
+- SP の Entity ID、ACS URL、Metadata URL、NameID Format を表示し、各値をコピーできます。
+- IdP Entity ID、IdP SSO URL、IdP X.509 証明書、「設定した IdP 証明書への署名検証を強制する」はブラウザのメモリだけに残ります。フォームの `toolname` は `configure_saml_idp` です。再読み込みすると消えます。秘密鍵は受け付けません。
+- 「SAMLテスト送信 (IdP-Initiated SSO シミュレート)」は、その場で作った自己署名の SAMLResponse を `POST /api/saml/acs` へ送ります。成功するとこの画面に NameID、Issuer、検証済みの署名、属性を表示します。失敗すると理由を表示します。
+- `/login` の「SAML SSOでログイン」は、IdP SSO URL が保存されていればその URL へ SAML リクエストを送ります。未設定のときはテスト応答で ACS を通り、成功すると `/dashboard` に移動します。
+- ACS の検証に成功すると、ブラウザの監査ログへ `user.login` を 1 件追加します。Worker には残しません。
+
+`GET /api/saml/metadata` は SP の EntityDescriptor を返します。`POST /api/saml/acs` は `SAMLResponse` と任意の `RelayState` を受けます。XML 署名、Audience、Recipient、有効期限を検証し、DTD と外部実体は拒否します。`RelayState` は `/` から始まる相対パスだけを受け付け、それ以外は `/settings/sso` にエラーを表示します。未指定のときは `/settings/sso` に戻ります。256KB を超える本文は拒否します。`POST /api/saml/test-response` はテスト用の署名済み SAMLResponse と公開証明書を返します。秘密鍵はレスポンスに含まれません。
+
 ### `/audit-logs` 監査ログ
 
 操作履歴の一覧です。初期状態では 18 件のシードデータが入っています。サイドバーの「監査ログ」から開きます。
 
 - 操作種別で絞り込めます。選択肢はログイン（`user.login`）、ユーザー作成（`user.create`）、ユーザー削除（`user.delete`）、権限変更（`user.permission_change`）、CSVエクスポート（`user.export_csv`）、ユーザー更新（`user.update`）、アカウント無効化（`user.disable`）です。「すべて」で種別の絞り込みは外れます。
 - キーワードは、操作者、操作、対象、概要、IPアドレス、日時に部分一致します。検索ボタンで絞り込み、入力を空にするとキーワードは外れます。「クリア」で種別とキーワードの両方を外します。
-- ログイン（`/login`）、ユーザー登録（`/users/new`）、ユーザー削除（`/users` の確認後、または `/users/:id` の確認後）、ユーザー更新（`/users/:id` の保存）、CSVダウンロード（ユーザー一覧の「CSVダウンロード」）、SCIM のプロビジョニングと無効化（`/settings/scim`）を行うと、その操作が先頭に追加されます。ログインしたメールアドレスが、その後の操作の操作者になります。未入力のときは `admin@example.com` です。
+- ログイン（`/login` のパスワード、または SAML ACS の検証成功）、ユーザー登録（`/users/new`）、ユーザー削除（`/users` の確認後、または `/users/:id` の確認後）、ユーザー更新（`/users/:id` の保存）、CSVダウンロード（ユーザー一覧の「CSVダウンロード」）、SCIM のプロビジョニングと無効化（`/settings/scim`）を行うと、その操作が先頭に追加されます。ログインしたメールアドレスが、その後の操作の操作者になります。未入力のときは `admin@example.com` です。SAML の場合は NameID が操作者になります。
 - 追加分はブラウザのメモリだけに残り、再読み込みすると 18 件のシードに戻ります。
 
 ### `GET /api/audit-logs`
@@ -166,11 +178,10 @@ npm run deploy
 
 `npm run deploy` は `vite build` のあと `wrangler deploy` を実行します。静的アセットは SPA として配信され、存在しない画面パスは `index.html` に戻ります。`/api/*` だけ Worker が先に受けます。
 
-画面の追加、更新、削除、監査ログの追加はブラウザのメモリだけです。Worker の `GET /api/users` はシードデータ（100件、`seed=42`）をページングするだけで、登録、更新、削除は反映しません。各ユーザーには `id`、`name`、`email`、`department`、`status`、`createdAt` に加え、`position`、`permission`（`general` / `admin` / `readonly`）、`joinDate`、`notes` が含まれます。`GET /api/audit-logs` は監査ログのシード 18 件を返します。`action` は操作種別の完全一致、`limit` は 1〜100 です。ブラウザで追加した履歴は含みません。`GET /api/health` は `{ "ok": true }` を返します。
+画面の追加、更新、削除、監査ログの追加はブラウザのメモリだけです。Worker の `GET /api/users` はシードデータ（100件、`seed=42`）をページングするだけで、登録、更新、削除は反映しません。各ユーザーには `id`、`name`、`email`、`department`、`status`、`createdAt` に加え、`position`、`permission`（`general` / `admin` / `readonly`）、`joinDate`、`notes` が含まれます。`GET /api/audit-logs` は監査ログのシード 18 件を返します。`action` は操作種別の完全一致、`limit` は 1〜100 です。ブラウザで追加した履歴は含みません。`GET /api/health` は `{ "ok": true }` を返します。SAML の IdP 設定も Worker には保存しません。
 
 ## ロードマップ
 
-- 外部 IdP 連携のための SAML 2.0 Service Provider (SP)
 - SaaS 管理画面の UI パターンを増やす
 - パフォーマンスとエッジ配信の最適化
 

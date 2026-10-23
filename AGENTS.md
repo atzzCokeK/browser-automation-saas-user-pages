@@ -20,7 +20,10 @@ There is no Next.js and no server rendering. Do not add `next`, an `app/` direct
 - `/users/new` keeps the WebMCP attributes `toolname="register_user"`, `tooldescription`, and `toolparamdescription` on the same elements.
 - `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`. Saving and deleting also append an in-memory audit log entry.
 - Audit log entries from login, registration, edit, delete, CSV export, and the SCIM simulator stay in `hooks/useAuditLogStore.ts`. A reload restores the 18 seeded logs in `data/auditLogs.ts`.
-- `GET /api/audit-logs` returns that seed only. Query params are `action` (exact match) and `limit` (1–100). It does not see in-memory entries.
+- `GET /api/audit-logs` returns that seed only. Query params are `action` (exact match) and `limit` (1–100). It does not see in-memory entries. Do not record SAML results in the Worker.
+- `/settings/sso` is the SAML 2.0 SP screen. IdP settings stay in the browser module store (`hooks/useSamlConfig.ts`) and reset on reload. The form keeps `toolname="configure_saml_idp"`.
+- `GET /api/saml/metadata`, `POST /api/saml/acs`, `POST /api/saml/test-response`, and `GET /api/saml/login` live on the Hono worker. ACS rejects DTD/entities, oversized bodies, unsafe `RelayState`, and assertions that fail signature, audience, recipient, or time checks. Do not add an XML parser dependency or persist SAML input.
+- `/login` includes `SAML SSOでログイン`. With no saved IdP SSO URL it posts a fresh signed test assertion through the ACS and lands on `/dashboard`. A successful ACS redirect records `user.login` in the browser audit log.
 - UI copy is Japanese. The document title is `SaaS Admin - 管理画面` and `html` is `lang="ja"`.
 
 ## Security
