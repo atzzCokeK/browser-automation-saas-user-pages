@@ -1,6 +1,14 @@
 import { Hono } from "hono";
 import { auditLogs, queryAuditLogs } from "@/data/auditLogs";
 import { users } from "@/data/users";
+import { MAX_SAML_BYTES } from "@/src/saml/shared";
+import {
+  buildMetadata,
+  consumeAssertionConsumer,
+  createAuthnRequest,
+  createPublicTestResponse,
+  readBodyLimited,
+} from "@/src/worker/saml";
 
 const app = new Hono();
 
@@ -65,6 +73,43 @@ app.get("/api/audit-logs", (c) => {
 app.on(["POST", "PUT", "PATCH", "DELETE"], "/api/audit-logs", (c) => {
   c.header("Allow", "GET, HEAD");
   return c.body(null, 405);
+});
+
+app.get("/api/saml/metadata", (c) => {
+  c.header("Content-Type", "application/samlmetadata+xml; charset=utf-8");
+  c.header("Cache-Control", "no-store");
+  c.header("X-Content-Type-Options", "nosniff");
+  return c.body(buildMetadata(new URL(c.req.url).origin));
+});
+
+app.post("/api/saml/acs", async (c) => {
+  const location = await consumeAssertionConsumer({
+    origin: new URL(c.req.url).origin,
+    contentType: c.req.header("content-type") ?? "",
+    cookie: c.req.header("cookie") ?? null,
+    body: await readBodyLimited(c.req.raw, MAX_SAML_BYTES),
+  });
+  c.header("Cache-Control", "no-store");
+  c.header("Referrer-Policy", "no-referrer");
+  c.header("X-Content-Type-Options", "nosniff");
+  return c.redirect(location, 303);
+});
+
+app.post("/api/saml/test-response", async (c) => {
+  const result = await createPublicTestResponse({
+    origin: new URL(c.req.url).origin,
+    contentType: c.req.header("content-type") ?? "",
+    body: await readBodyLimited(c.req.raw, MAX_SAML_BYTES),
+  });
+  c.header("Cache-Control", "no-store");
+  c.header("X-Content-Type-Options", "nosniff");
+  return c.json(result.body, result.status);
+});
+
+app.get("/api/saml/login", async (c) => {
+  c.header("Cache-Control", "no-store");
+  c.header("X-Content-Type-Options", "nosniff");
+  return c.json(await createAuthnRequest(new URL(c.req.url).origin));
 });
 
 export default app;
