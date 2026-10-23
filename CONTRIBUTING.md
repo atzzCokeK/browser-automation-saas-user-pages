@@ -40,6 +40,10 @@ npm run build
 
 画面の説明が変わるときは、`README.md` の「使える画面」も更新してください。
 
+## セキュリティ
+
+本番の個人情報、従業員データ、認証情報、証明書は置かないでください。報告方法は [SECURITY.md](SECURITY.md)、実装時の制約は [.cursor/rules/security.mdc](.cursor/rules/security.mdc) です。
+
 ## レビューで見ること
 
 - 再読み込み後に初期状態へ戻るか
