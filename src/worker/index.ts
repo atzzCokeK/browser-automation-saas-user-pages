@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { auditLogs, queryAuditLogs } from "@/data/auditLogs";
 import { users } from "@/data/users";
 
 const app = new Hono();
@@ -35,6 +36,33 @@ app.get("/api/users", async (c) => {
 // The previous Next.js route exported GET only, so other methods were 405.
 // OPTIONS is answered by the local Workers runtime before it reaches this app.
 app.on(["POST", "PUT", "PATCH", "DELETE"], "/api/users", (c) => {
+  c.header("Allow", "GET, HEAD");
+  return c.body(null, 405);
+});
+
+// 未指定や数値でない limit は全件。指定時は 1〜100 に丸める。
+function parseAuditLimit(value: string | undefined): number | null {
+  if (value === undefined || value.trim() === "") return null;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.min(100, Math.max(1, Math.floor(parsed)));
+}
+
+app.get("/api/audit-logs", (c) => {
+  // ブラウザのメモリに足した履歴は共有しない。どの訪問者にも同じシードを返す。
+  const result = queryAuditLogs(auditLogs, {
+    action: c.req.query("action"),
+    limit: parseAuditLimit(c.req.query("limit")),
+  });
+
+  return c.json({
+    logs: result.logs,
+    totalCount: result.totalCount,
+    limit: result.limit,
+  });
+});
+
+app.on(["POST", "PUT", "PATCH", "DELETE"], "/api/audit-logs", (c) => {
   c.header("Allow", "GET, HEAD");
   return c.body(null, 405);
 });

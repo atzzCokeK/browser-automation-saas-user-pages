@@ -9,6 +9,7 @@ import {
   positions,
   type User,
 } from "@/data/users";
+import { recordUserDelete, recordUserEdit } from "@/hooks/useAuditLogStore";
 import { deleteUser, findUser, setNotification, updateUser, useUserStore } from "@/hooks/useUserStore";
 import formStyles from "@/styles/user-new.module.css";
 import styles from "@/styles/user-detail.module.css";
@@ -62,8 +63,7 @@ function UserDetailForm({ user }: { user: User }) {
     const department = String(formData.get("department") ?? "").trim();
     const permissionRaw = String(formData.get("permission") ?? "").trim();
     const name = `${nextLastName} ${nextFirstName}`.trim();
-
-    updateUser(user.id, {
+    const nextUser: Omit<User, "id" | "createdAt"> = {
       name,
       email: String(formData.get("email") ?? "").trim(),
       department: department === "" ? "-" : department,
@@ -72,7 +72,10 @@ function UserDetailForm({ user }: { user: User }) {
       status: formData.get("status") === "無効" ? "無効" : "有効",
       joinDate: String(formData.get("join_date") ?? "").trim(),
       notes: String(formData.get("notes") ?? "").trim(),
-    });
+    };
+
+    updateUser(user.id, nextUser);
+    recordUserEdit(user, nextUser);
 
     setNotification(`${name} の情報を更新しました`);
     setSubmitted(true);
@@ -81,6 +84,7 @@ function UserDetailForm({ user }: { user: User }) {
 
   const handleConfirmDelete = () => {
     deleteUser(user.id);
+    recordUserDelete(user.name, user.email);
     setNotification(`${user.name} を削除しました`);
     setConfirmOpen(false);
     navigate("/users");

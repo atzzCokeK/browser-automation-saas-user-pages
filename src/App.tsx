@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 import DashboardLayout from "@/src/layouts/DashboardLayout";
+import AuditLogsPage from "@/src/pages/AuditLogsPage";
 import DashboardPage from "@/src/pages/DashboardPage";
 import LoginPage from "@/src/pages/LoginPage";
 import UserDetailPage from "@/src/pages/UserDetailPage";
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/new" element={<UserNewPage />} />
         <Route path="/users/:id" element={<UserDetailPage />} />
+        <Route path="/audit-logs" element={<AuditLogsPage />} />
       </Route>
     </Routes>
   );

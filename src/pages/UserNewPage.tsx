@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { departments, isUserPermission, permissionOptions, positions } from "@/data/users";
+import { recordUserCreate } from "@/hooks/useAuditLogStore";
 import { addUser, setNotification } from "@/hooks/useUserStore";
 import styles from "@/styles/user-new.module.css";
 
@@ -23,11 +24,13 @@ export default function UserNewPage() {
     const lastName = String(formData.get("last_name") ?? "").trim();
     const firstName = String(formData.get("first_name") ?? "").trim();
     const department = String(formData.get("department") ?? "").trim();
+    const name = `${lastName} ${firstName}`.trim();
+    const email = String(formData.get("email") ?? "").trim();
     const permission = String(formData.get("permission") ?? "").trim();
 
     addUser({
-      name: `${lastName} ${firstName}`.trim(),
-      email: String(formData.get("email") ?? "").trim(),
+      name,
+      email,
       department: department === "" ? "-" : department,
       status: formData.get("status") === "無効" ? "無効" : "有効",
       createdAt: formatToday(),
@@ -36,6 +39,7 @@ export default function UserNewPage() {
       joinDate: String(formData.get("join_date") ?? "").trim(),
       notes: String(formData.get("notes") ?? "").trim(),
     });
+    recordUserCreate(name, email);
 
     setNotification("ユーザーを登録しました");
     setSubmitted(true);

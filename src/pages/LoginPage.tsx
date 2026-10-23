@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router";
 import type { FormEvent } from "react";
+import { recordLogin } from "@/hooks/useAuditLogStore";
 import styles from "@/styles/login.module.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const email = String(new FormData(e.currentTarget).get("email") ?? "");
+    recordLogin(email);
     navigate("/dashboard");
   };
 
@@ -26,6 +29,7 @@ export default function LoginPage() {
             <label htmlFor="email">メールアドレス</label>
             <input
               id="email"
+              name="email"
               type="email"
               placeholder="admin@example.com"
               defaultValue="admin@example.com"

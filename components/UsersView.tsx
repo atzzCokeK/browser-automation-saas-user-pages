@@ -2,6 +2,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
 import { type User } from "@/data/users";
+import { recordUserDelete } from "@/hooks/useAuditLogStore";
 import { consumeNotification, deleteUser, mergeStoredUsers, useUserStore } from "@/hooks/useUserStore";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
@@ -63,6 +64,7 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
   const handleConfirmDelete = () => {
     if (userToDelete) {
       deleteUser(userToDelete.id);
+      recordUserDelete(userToDelete.name, userToDelete.email);
       setNotification(`${userToDelete.name} を削除しました`);
     }
     setUserToDelete(null);

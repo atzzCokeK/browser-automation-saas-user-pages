@@ -17,7 +17,9 @@ There is no Next.js and no server rendering. Do not add `next`, an `app/` direct
 - `GET /api/users` pages the seed only. Query params are `page` and `limit`. It does not see in-memory adds, updates, deletes, or the email filter.
 - `GET /api/health` returns `{ "ok": true }`.
 - `/users/new` keeps the WebMCP attributes `toolname="register_user"`, `tooldescription`, and `toolparamdescription` on the same elements.
-- `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`.
+- `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`. Saving and deleting also append an in-memory audit log entry.
+- Audit log entries from login, registration, edit, delete, and CSV export stay in `hooks/useAuditLogStore.ts`. A reload restores the 18 seeded logs in `data/auditLogs.ts`.
+- `GET /api/audit-logs` returns that seed only. Query params are `action` (exact match) and `limit` (1–100). It does not see in-memory entries.
 - UI copy is Japanese. The document title is `SaaS Admin - 管理画面` and `html` is `lang="ja"`.
 
 ## Security
