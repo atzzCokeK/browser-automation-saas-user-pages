@@ -24,7 +24,7 @@ const navItems = [
     href: "/audit-logs",
     label: "監査ログ",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
       </svg>
     ),
@@ -35,6 +35,15 @@ const navItems = [
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path d="M10 2a4 4 0 00-4 4v2H5a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1h-1V6a4 4 0 00-4-4zm-2 6V6a2 2 0 114 0v2H8z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/settings/scim",
+    label: "SCIMプロビジョニング",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm-2 5V6a2 2 0 114 0v1H8zm2 3a1.5 1.5 0 00-.75 2.8V15h1.5v-2.2A1.5 1.5 0 0010 10z" />
       </svg>
     ),
   },
@@ -59,6 +68,7 @@ export default function Sidebar() {
               to={item.href}
               className={`${styles.navLink} ${isNavActive(pathname, item.href) ? styles.active : ""}`}
               aria-current={isNavActive(pathname, item.href) ? "page" : undefined}
+              aria-label={item.label}
             >
               {item.icon}
               <span>{item.label}</span>

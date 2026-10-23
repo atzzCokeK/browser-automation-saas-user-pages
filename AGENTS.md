@@ -13,12 +13,13 @@ There is no Next.js and no server rendering. Do not add `next`, an `app/` direct
 
 ## Behavior to keep
 
-- Adds, updates, and deletes stay in the browser module store (`hooks/useUserStore.ts`). A reload restores the 100 seeded users (`data/users.ts`, seed 42). Do not persist that state on the Worker or in a database.
+- Adds, updates, and deletes of the admin user list stay in the browser module store (`hooks/useUserStore.ts`). A reload restores the 100 seeded users (`data/users.ts`, seed 42). Do not persist that list on the Worker or in a database.
+- `/settings/scim` is the dummy SCIM 2.0 screen. `/api/scim/v2/*` keeps users and request logs in a per-token Worker memory ring (max 50 each). It is not a database and is not the `/users` list. The simulator copies a successful provision, update, deactivation, or delete into the browser user store and appends the matching audit log entry (`user.create`, `user.update`, `user.disable`, or `user.delete`). A reload mints a new bearer token, so the SCIM screen starts empty.
 - `GET /api/users` pages the seed only. Query params are `page` and `limit`. It does not see in-memory adds, updates, deletes, or the email filter.
 - `GET /api/health` returns `{ "ok": true }`.
 - `/users/new` keeps the WebMCP attributes `toolname="register_user"`, `tooldescription`, and `toolparamdescription` on the same elements.
 - `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`. Saving and deleting also append an in-memory audit log entry.
-- Audit log entries from login, registration, edit, delete, and CSV export stay in `hooks/useAuditLogStore.ts`. A reload restores the 18 seeded logs in `data/auditLogs.ts`.
+- Audit log entries from login, registration, edit, delete, CSV export, and the SCIM simulator stay in `hooks/useAuditLogStore.ts`. A reload restores the 18 seeded logs in `data/auditLogs.ts`.
 - `GET /api/audit-logs` returns that seed only. Query params are `action` (exact match) and `limit` (1–100). It does not see in-memory entries. Do not record SAML results in the Worker.
 - `/settings/sso` is the SAML 2.0 SP screen. IdP settings stay in the browser module store (`hooks/useSamlConfig.ts`) and reset on reload. The form keeps `toolname="configure_saml_idp"`.
 - `GET /api/saml/metadata`, `POST /api/saml/acs`, `POST /api/saml/test-response`, and `GET /api/saml/login` live on the Hono worker. ACS rejects DTD/entities, oversized bodies, unsafe `RelayState`, and assertions that fail signature, audience, recipient, or time checks. Do not add an XML parser dependency or persist SAML input.

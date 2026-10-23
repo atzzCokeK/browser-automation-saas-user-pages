@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { auditLogs, queryAuditLogs } from "@/data/auditLogs";
 import { users } from "@/data/users";
 import { MAX_SAML_BYTES } from "@/src/saml/shared";
+import { dispatchScim } from "@/src/worker/scim";
 import {
   buildMetadata,
   consumeAssertionConsumer,
@@ -11,6 +12,9 @@ import {
 } from "@/src/worker/saml";
 
 const app = new Hono();
+
+app.all("/api/scim/v2", dispatchScim);
+app.all("/api/scim/v2/*", dispatchScim);
 
 app.get("/api/health", (c) => {
   return c.json({ ok: true });

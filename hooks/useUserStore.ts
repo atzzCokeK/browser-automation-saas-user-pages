@@ -78,12 +78,14 @@ function userExists(id: number): boolean {
   );
 }
 
-export function addUser(user: NewUser) {
+export function addUser(user: NewUser): User {
+  const created: User = { ...user, id: nextId++ };
   store = {
     ...store,
-    addedUsers: [{ ...user, id: nextId++ }, ...store.addedUsers],
+    addedUsers: [created, ...store.addedUsers],
   };
   notify();
+  return created;
 }
 
 export function updateUser(id: number, updatedFields: UserUpdate) {
