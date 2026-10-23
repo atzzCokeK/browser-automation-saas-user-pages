@@ -34,6 +34,6 @@ https://github.com/atzzCokeK/browser-automation-saas-user-pages/security/advisor
 
 ## CI で見ていること
 
-`main` への push と pull request で、秘密情報のスキャン（Gitleaks）、`npm audit --audit-level=high`、依存差分の Dependency Review、CodeQL（JavaScript / TypeScript）を実行します。Dependency Review は、リポジトリの Dependency graph が有効なときだけ依存差分を検査します。無効なあいだはジョブが警告を出して成功し、有効になったあとは新しく入った high 以上で失敗します。この設定はリポジトリの Settings → Advanced Security から所有者が切り替えます。
+`main` への push と pull request で、秘密情報のスキャン（Gitleaks）、`npm audit`、依存差分の Dependency Review、CodeQL（JavaScript / TypeScript）を実行します。Dependency Review は、リポジトリの Dependency graph が有効なときだけ依存差分を検査します。無効なあいだはジョブが警告を出して成功し、有効になったあとは新しく入った high 以上で失敗します。この設定はリポジトリの Settings → Advanced Security から所有者が切り替えます。
 
-ピン留めされた Next.js 16.2.4 には、既知の high / critical advisory があります。この変更では `package.json` を更新しないため、`.github/npm-audit-baseline.txt` に列挙した advisory だけを既知として許容します。一覧に無い high 以上が出た場合、CI は失敗します。
+`npm audit` は依存関係を直接検査し、既知の脆弱性が報告された場合は失敗します。
