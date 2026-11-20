@@ -175,6 +175,83 @@
   background: var(--color-primary);
 }
 
+.switchers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+button.detailLink {
+  justify-content: center;
+  gap: 4px;
+  min-width: 80px;
+  cursor: pointer;
+}
+
+.toggleIcon {
+  transition: transform 0.15s;
+}
+
+.toggleIconOpen {
+  transform: rotate(180deg);
+}
+
+.table tbody tr.rowExpanded,
+.table tbody tr.detailRow {
+  background: #f8fafc;
+}
+
+.table tbody tr.rowExpanded td {
+  border-bottom: none;
+}
+
+.table tbody tr.detailRow td {
+  padding: 0 16px 16px;
+}
+
+.detailPanel {
+  padding: 16px 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius);
+}
+
+.detailList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+}
+
+.detailField {
+  min-width: 0;
+}
+
+.detailFieldWide {
+  grid-column: 1 / -1;
+}
+
+.detailList dt {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.detailList dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.detailList dd.detailEmpty {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
 .table thead {
   background: var(--color-bg);
 }

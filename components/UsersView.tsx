@@ -6,6 +6,8 @@ import { recordUserDelete } from "@/hooks/useAuditLogStore";
 import { consumeNotification, deleteUser, mergeStoredUsers, useUserStore } from "@/hooks/useUserStore";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
+import DetailSwitcher, { type Detail } from "@/components/DetailSwitcher";
+import ExpandableUserTable from "@/components/ExpandableUserTable";
 import InfiniteScrollUsers from "@/components/InfiniteScrollUsers";
 import LoadMoreUsers from "@/components/LoadMoreUsers";
 import ModeSwitcher from "@/components/ModeSwitcher";
@@ -19,10 +21,12 @@ const PER_PAGE = 20;
 type Props = {
   allUsers: User[];
   mode: "pagination" | "cumulative" | "load-more";
+  detail: Detail;
   initialPage: number;
 };
 
-export default function UsersView({ allUsers, mode, initialPage }: Props) {
+export default function UsersView({ allUsers, mode, detail, initialPage }: Props) {
+  const Table = detail === "expand" ? ExpandableUserTable : UserTable;
   const store = useUserStore();
   const [searchInput, setSearchInput] = useState("");
   const [emailQuery, setEmailQuery] = useState("");
@@ -121,7 +125,10 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
       </form>
 
       <Suspense fallback={<div>Loading...</div>}>
-        <ModeSwitcher />
+        <div className={styles.switchers}>
+          <ModeSwitcher />
+          <DetailSwitcher />
+        </div>
       </Suspense>
 
       {visibleUsers.length === 0 ? (
@@ -132,7 +139,7 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
         </p>
       ) : mode === "pagination" ? (
         <>
-          <UserTable users={pageUsers} onDelete={setUserToDelete} />
+          <Table users={pageUsers} onDelete={setUserToDelete} />
 
           <Pagination
             currentPage={safePage}
@@ -145,9 +152,9 @@ export default function UsersView({ allUsers, mode, initialPage }: Props) {
           </footer>
         </>
       ) : mode === "load-more" ? (
-        <LoadMoreUsers users={visibleUsers} onDelete={setUserToDelete} />
+        <LoadMoreUsers users={visibleUsers} onDelete={setUserToDelete} table={Table} />
       ) : (
-        <InfiniteScrollUsers users={visibleUsers} onDelete={setUserToDelete} />
+        <InfiniteScrollUsers users={visibleUsers} onDelete={setUserToDelete} table={Table} />
       )}
 
       <ConfirmDialog

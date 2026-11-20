@@ -1,17 +1,15 @@
-import { useState } from "react";
-import { type User } from "@/data/users";
-import UserTable from "@/components/UserTable";
+import { useState, type ComponentType } from "react";
+import { type UserTableProps } from "@/components/UserTable";
 import styles from "@/styles/infinite-scroll.module.css";
 
-type Props = {
-  users: User[];
-  onDelete: (user: User) => void;
+type Props = UserTableProps & {
+  table: ComponentType<UserTableProps>;
 };
 
 const PER_PAGE = 20;
 const LOAD_DELAY_MS = 300;
 
-export default function LoadMoreUsers({ users, onDelete }: Props) {
+export default function LoadMoreUsers({ users, onDelete, table: Table }: Props) {
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,7 +26,7 @@ export default function LoadMoreUsers({ users, onDelete }: Props) {
 
   return (
     <div className={styles.scrollContainer}>
-      <UserTable users={items} onDelete={onDelete} />
+      <Table users={items} onDelete={onDelete} />
 
       {hasMore ? (
         <div className={styles.loadMoreRow}>

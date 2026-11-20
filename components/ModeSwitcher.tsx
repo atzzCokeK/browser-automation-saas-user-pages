@@ -30,16 +30,21 @@ export default function ModeSwitcher() {
   };
 
   return (
-    <div className={styles.wrapper}>
-      {modes.map(({ value, label }) => (
-        <button
-          key={value}
-          className={`${styles.tab} ${currentMode === value ? styles.tabActive : ""}`}
-          onClick={() => handleModeChange(value)}
-        >
-          {label}
-        </button>
-      ))}
+    <div className={styles.group} role="group" aria-labelledby="mode-switcher-label">
+      <span id="mode-switcher-label" className={styles.groupLabel}>
+        読み込み方
+      </span>
+      <div className={styles.wrapper}>
+        {modes.map(({ value, label }) => (
+          <button
+            key={value}
+            className={`${styles.tab} ${currentMode === value ? styles.tabActive : ""}`}
+            onClick={() => handleModeChange(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
