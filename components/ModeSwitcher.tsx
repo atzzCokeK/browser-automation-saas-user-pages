@@ -1,11 +1,12 @@
 import { useNavigate, useSearchParams } from "react-router";
 import styles from "@/styles/mode-switcher.module.css";
 
-type Mode = "pagination" | "cumulative";
+type Mode = "pagination" | "cumulative" | "load-more";
 
 const modes: { value: Mode; label: string }[] = [
   { value: "pagination", label: "ページ送り" },
   { value: "cumulative", label: "累積スクロール" },
+  { value: "load-more", label: "追加読み込み" },
 ];
 
 export default function ModeSwitcher() {
