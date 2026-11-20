@@ -34,6 +34,10 @@ export function isUserPermission(value: string): value is UserPermission {
   return permissionOptions.some((option) => option.value === value);
 }
 
+export function permissionLabel(value: string): string {
+  return permissionOptions.find((option) => option.value === value)?.label ?? "未設定";
+}
+
 const lastNames: { kanji: string; romaji: string }[] = [
   { kanji: "田中", romaji: "tanaka" },
   { kanji: "佐藤", romaji: "sato" },

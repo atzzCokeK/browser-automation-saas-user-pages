@@ -2,12 +2,12 @@ import { Link } from "react-router";
 import { type User } from "@/data/users";
 import styles from "@/styles/users.module.css";
 
-type Props = {
+export type UserTableProps = {
   users: User[];
   onDelete: (user: User) => void;
 };
 
-export default function UserTable({ users, onDelete }: Props) {
+export default function UserTable({ users, onDelete }: UserTableProps) {
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>

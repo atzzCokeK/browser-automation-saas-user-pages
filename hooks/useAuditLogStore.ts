@@ -4,7 +4,7 @@ import {
   type AuditAction,
   type AuditLog,
 } from "@/data/auditLogs";
-import { permissionOptions, type User } from "@/data/users";
+import { permissionLabel, type User } from "@/data/users";
 
 // ブラウザ内の操作で増えた履歴。再読み込みでモジュールが初期化され、シードに戻る。
 let logs: readonly AuditLog[] = auditLogs;
@@ -120,10 +120,6 @@ type EditableUser = Pick<
   User,
   "name" | "email" | "department" | "position" | "permission" | "status" | "joinDate" | "notes"
 >;
-
-function permissionLabel(value: string): string {
-  return permissionOptions.find((option) => option.value === value)?.label ?? "未設定";
-}
 
 // 保存 1 回につき 1 件。権限変更と無効化は、その操作が分かる action にする。
 export function recordUserEdit(before: EditableUser, after: EditableUser) {

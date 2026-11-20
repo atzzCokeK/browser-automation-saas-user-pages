@@ -1,19 +1,17 @@
-import { useState, useRef, useCallback } from "react";
-import { type User } from "@/data/users";
+import { useState, useRef, useCallback, type ComponentType } from "react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import UserTable from "@/components/UserTable";
+import { type UserTableProps } from "@/components/UserTable";
 import styles from "@/styles/infinite-scroll.module.css";
 
-type Props = {
-  users: User[];
-  onDelete: (user: User) => void;
+type Props = UserTableProps & {
+  table: ComponentType<UserTableProps>;
 };
 
 const PER_PAGE = 20;
 // 読み込み中インジケーターが見えるように、あえて待ってから続きを表示する。
 const LOAD_DELAY_MS = 300;
 
-export default function InfiniteScrollUsers({ users, onDelete }: Props) {
+export default function InfiniteScrollUsers({ users, onDelete, table: Table }: Props) {
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
   const [isLoadingDown, setIsLoadingDown] = useState(false);
 
@@ -45,7 +43,7 @@ export default function InfiniteScrollUsers({ users, onDelete }: Props) {
 
   return (
     <div className={styles.scrollContainer}>
-      <UserTable users={items} onDelete={onDelete} />
+      <Table users={items} onDelete={onDelete} />
 
       {hasMore ? (
         <>

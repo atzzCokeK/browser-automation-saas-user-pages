@@ -1,7 +1,18 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.groupLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
 .wrapper {
   display: flex;
   gap: 4px;
-  margin-bottom: 24px;
 }
 
 .tab {

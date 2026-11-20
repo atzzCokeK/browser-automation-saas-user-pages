@@ -16,6 +16,7 @@ There is no Next.js and no server rendering. Do not add `next`, an `app/` direct
 - Adds, updates, and deletes stay in the browser module store (`hooks/useUserStore.ts`). A reload restores the 100 seeded users (`data/users.ts`, seed 42). Do not persist that state on the Worker or in a database.
 - `GET /api/users` pages the seed only. Query params are `page` and `limit`. It does not see in-memory adds, updates, deletes, or the email filter.
 - `GET /api/health` returns `{ "ok": true }`.
+- `/users?detail=expand` hides email and the other profile fields from the list and opens them inline per row. A collapsed row's details must not be in the DOM: render them conditionally, never hide them with CSS. Automation tests rely on their absence. `detail` is independent of `mode`.
 - `/users/new` keeps the WebMCP attributes `toolname="register_user"`, `tooldescription`, and `toolparamdescription` on the same elements.
 - `/users/:id` edits and deletes that same in-memory user. Its form keeps the WebMCP attributes with `toolname="update_user"`. Missing or deleted ids show `ユーザーが見つかりません`. Saving and deleting also append an in-memory audit log entry.
 - Audit log entries from login, registration, edit, delete, and CSV export stay in `hooks/useAuditLogStore.ts`. A reload restores the 18 seeded logs in `data/auditLogs.ts`.
