@@ -119,7 +119,7 @@ https://dummy-saas-user-pages.vercel.app は、この Workers URL へ恒久的�
 
 ## 始め方
 
-Node.js 22 を使います。
+Node.js 26 を使います。
 
 ```bash
 npm install
